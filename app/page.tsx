@@ -1,18 +1,9 @@
-import { CartResponse } from "@/types/cart";
+import { getCartData } from "@/lib/data";
 import CartPageClient from "./CartPageClient";
 
-async function getCartData(): Promise<CartResponse> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/cart`, { cache: "no-store" });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch cart data");
-  }
-
-  return res.json();
-}
-
 export default async function CartPage() {
+  // Using direct data fetching instead of HTTP fetch for Next.js 14 SSR
+  // This avoids ECONNREFUSED on Vercel deployments when fetching localhost
   const data = await getCartData();
 
   return <CartPageClient data={data} />;
