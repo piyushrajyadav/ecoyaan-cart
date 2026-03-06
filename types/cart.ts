@@ -13,6 +13,7 @@ export interface CartResponse {
 }
 
 export interface ShippingAddress {
+  id?: string;
   fullName: string;
   email: string;
   phone: string;

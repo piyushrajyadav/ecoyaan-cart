@@ -17,7 +17,7 @@ export default function SuccessPage() {
     }, [resetStore]);
 
     return (
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-2xl mx-auto px-6 sm:px-8 py-8">
             <CheckoutProgress currentStep={3} />
 
             <div className="card p-8 sm:p-12 text-center animate-scale-in">

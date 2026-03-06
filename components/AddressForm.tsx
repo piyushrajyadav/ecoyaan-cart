@@ -2,11 +2,13 @@
 
 import { useForm } from "react-hook-form";
 import { ShippingAddress } from "@/types/cart";
-import { User, Mail, Phone, MapPin, Building2, Map } from "lucide-react";
+import { User, Mail, Phone, MapPin, Building2, Map, AlertCircle } from "lucide-react";
 
 interface AddressFormProps {
+    formId?: string;
     onSubmit: (data: ShippingAddress) => void;
     defaultValues?: ShippingAddress;
+    hideSubmitButton?: boolean;
 }
 
 const fields = [
@@ -78,49 +80,48 @@ const fields = [
     },
 ];
 
-export default function AddressForm({ onSubmit, defaultValues }: AddressFormProps) {
+export default function AddressForm({
+    formId,
+    onSubmit,
+    defaultValues,
+    hideSubmitButton = false,
+}: AddressFormProps) {
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm<ShippingAddress>({
         defaultValues: defaultValues || undefined,
     });
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form id={formId} onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {fields.map((field) => {
                     const Icon = field.icon;
                     const error = errors[field.name];
+                    const isWide = field.name === "fullName" || field.name === "email";
                     return (
-                        <div
-                            key={field.name}
-                            className={field.name === "fullName" || field.name === "email" ? "sm:col-span-2" : ""}
-                        >
-                            <label className="block text-sm font-medium text-slate-600 mb-1.5">
+                        <div key={field.name} className={isWide ? "sm:col-span-2" : ""}>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
                                 {field.label}
                             </label>
                             <div className="relative">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                                    <Icon className="w-4.5 h-4.5" />
-                                </div>
+                                <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                                 <input
                                     type={field.type}
                                     placeholder={field.placeholder}
-                                    className={`input-field ${error ? "error" : ""}`}
+                                    className={`w-full pl-10 pr-4 py-3 text-sm rounded-xl border transition-all duration-200 outline-none placeholder:text-slate-300
+                                        ${error
+                                            ? "bg-red-50 border-red-300 text-red-800 focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                                            : "bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+                                        }`}
                                     {...register(field.name, field.validation)}
                                 />
                             </div>
                             {error && (
-                                <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
+                                <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+                                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                                     {error.message}
                                 </p>
                             )}
@@ -129,12 +130,17 @@ export default function AddressForm({ onSubmit, defaultValues }: AddressFormProp
                 })}
             </div>
 
-            <button type="submit" disabled={isSubmitting} className="btn-primary w-full mt-6 flex items-center justify-center gap-2">
-                Continue to Payment
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-            </button>
+            {!hideSubmitButton && (
+                <button
+                    type="submit"
+                    className="btn-primary w-full mt-2 flex items-center justify-center gap-2"
+                >
+                    Save & Continue
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </button>
+            )}
         </form>
     );
 }
